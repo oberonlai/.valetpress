@@ -1,0 +1,253 @@
+# ValetPress
+
+#styles
+VP_NONE='\033[00m'
+VP_RED='\033[01;31m'
+VP_GREEN='\033[01;32m'
+VP_YELLOW='\033[01;33m'
+VP_PURPLE='\033[01;35m'
+VP_CYAN='\033[01;36m'
+VP_WHITE='\033[01;37m'
+VP_BOLD='\033[1m'
+VP_UNDERLINE='\033[4m'
+
+
+# vp create
+alias vp='function _vp(){
+
+	if [ $1 = "create" ]; then
+		cd ~/Sites
+		echo "${VP_BOLD}ValetPress, create new site ${VP_NONE}"
+		echo "${VP_YELLOW}Project Name:${VP_NONE}"
+		read project_name
+		mkdir "$project_name"
+		cd "$project_name"
+		echo "${VP_YELLOW}DB Prefix:${VP_NONE}"
+		read dbprefix
+		mysql -uroot -e "create database \`$project_name\`"
+		wp core download --locale=zh_TW --skip-content
+		wp core config --dbname="$project_name" --dbuser=root --dbhost=127.0.0.1 --dbprefix="$dbprefix"
+		wp core install --url="$project_name".test --title="$project_name".test --admin_user="$project_name"  --admin_password=password --admin_email=wordpress@wordpress.org
+		git clone https://github.com/oberonlai/ods.git wp-content/themes/"$project_name"
+		eval mv ~/Sites/"$project_name"/wp-content/themes/ods ~/Sites/"$project_name"/wp-content/themes/"$project_name"
+		cd wp-content/themes/"$project_name"
+		rm -rf .git
+		git init
+		wp theme activate "$project_name"
+		#wp plugin activate advanced-custom-fields-pro minimal-admin bulk-page-creator simple-page-ordering
+		#wp plugin update --all
+		echo "${VP_GREEN}Success:${VP_NONE} Project Created: ${VP_UNDERLINE}http://$project_name.test/${VP_NONE}"
+		echo "L: ${VP_UNDERLINE}http://$project_name.test/wp-admin/${VP_NONE}"
+		echo "U: $project_name"
+		echo "P: password"
+		echo "Valet Link Project"
+		cd ~/Sites/"$project_name"/
+		valet link $project_name
+		valet secure $project_name
+		echo "${VP_GREEN}Success:${VP_NONE} Updating&Running NPM install"
+		cd ~/Sites/"$project_name"/wp-content/themes/"$project_name"
+		npm-upgrade
+		npm install
+		echo "${VP_GREEN}Success:${VP_NONE} Running Parcel Build"
+		npm run build
+		#gulp
+	fi
+
+	if [ $1 = "clone" ]; then
+		cd ~/Sites
+		echo "${VP_BOLD}ValetPress, clone new site from a repo ${VP_NONE}"
+		echo "${VP_YELLOW}Project Name:${VP_NONE}"
+		read project_name
+		echo "${VP_YELLOW}Repo To Clone into wp-content:${VP_NONE}"
+		read repo_url
+		mkdir "$project_name"
+		cd "$project_name"
+		mysql -uroot -e "create database \`$project_name\`"
+		wp core download
+		wp core config --dbname="$project_name" --dbuser=root --dbhost=127.0.0.1
+		wp core install --url="$project_name".test --title="$project_name".test --admin_user="$project_name"  --admin_password=password --admin_email=wordpress@wordpress.org
+		rm -rf wp-content
+		git clone $repo_url wp-content
+		cd wp-content
+		wp plugin update --all
+		wp plugin activate --all
+		echo "${VP_GREEN}Success:${VP_NONE} Project Created: ${VP_UNDERLINE}http://$project_name.test/${VP_NONE}"
+		echo "L: ${VP_UNDERLINE}http://$project_name.test/wp-admin/${VP_NONE}"
+		echo "U: $project_name"
+		echo "P: password"
+	fi
+
+	if [ $1 = "empty" ]; then
+		cd ~/Sites
+		echo "${VP_BOLD}ValetPress, create empty new site${VP_NONE}"
+		echo "${VP_YELLOW}Project Name:${VP_NONE}"
+		read project_name
+		mkdir "$project_name"
+		cd "$project_name"
+		mysql -uroot -e "create database \`$project_name\`"
+		wp core download --locale=zh_TW --skip-content
+		wp core config --dbname="$project_name" --dbuser=root --dbhost=127.0.0.1
+		wp core install --url="$project_name".test --title="$project_name".test --admin_user="$project_name"  --admin_password=password --admin_email=wordpress@wordpress.org
+		echo "${VP_GREEN}Success:${VP_NONE} Project Created: ${VP_UNDERLINE}http://$project_name.test/${VP_NONE}"
+		wp plugin uninstall hello
+		wp plugin uninstall akismet
+		wp theme delete twentyfifteen
+		echo "L: ${VP_UNDERLINE}http://$project_name.test/wp-admin/${VP_NONE}"
+		echo "U: $project_name"
+		echo "P: password"
+		echo "Valet Link Project"
+		cd ~/Sites/"$project_name"/
+		valet link $project_name
+		valet secure $project_name
+	fi
+
+	if [ $1 = "plugin" ]; then
+		cd ~/Sites
+		echo "${VP_BOLD}ValetPress, create empty new site with plugin boilerplate${VP_NONE}"
+		echo "${VP_YELLOW}Project Name:${VP_NONE}"
+		read project_name
+		mkdir "$project_name"
+		cd "$project_name"
+		mysql -uroot -e "create database \`$project_name\`"
+		wp core download --locale=zh_TW --skip-content
+		wp core config --dbname="$project_name" --dbuser=root --dbhost=127.0.0.1
+		wp core install --url="$project_name".test --title="$project_name".test --admin_user="$project_name"  --admin_password=password --admin_email=wordpress@wordpress.org
+		echo "${VP_GREEN}Success:${VP_NONE} Project Created: ${VP_UNDERLINE}http://$project_name.test/${VP_NONE}"
+		wp plugin uninstall hello
+		wp plugin uninstall akismet
+		wp theme delete twentyfifteen
+		git clone https://github.com/oberonlai/ods.git wp-content/themes/"$project_name"
+		#eval mv ~/Sites/"$project_name"/wp-content/themes/ods ~/Sites/"$project_name"/wp-content/themes/"$project_name"
+		#cd wp-content/themes/"$project_name"
+		#rm -rf .git
+		#git init
+		#wp theme activate "$project_name"
+		#wp plugin activate advanced-custom-fields-pro minimal-admin bulk-page-creator simple-page-ordering
+		#wp plugin update --all
+		echo "L: ${VP_UNDERLINE}http://$project_name.test/wp-admin/${VP_NONE}"
+		echo "U: $project_name"
+		echo "P: password"
+		echo "Valet Link Project"
+		cd ~/Sites/"$project_name"/
+		#npm-upgrade
+		#npm install
+		valet link $project_name
+		valet secure $project_name
+	fi
+
+	if [ $1 = "wc" ]; then
+		cd ~/Sites
+		echo "${VP_BOLD}ValetPress, create empty new site with WooCommerce${VP_NONE}"
+		echo "${VP_YELLOW}Project Name:${VP_NONE}"
+		read project_name
+		mkdir "$project_name"
+		cd "$project_name"
+		mysql -uroot -e "create database \`$project_name\`"
+		wp core download --locale=zh_TW --skip-content
+		wp core config --dbname="$project_name" --dbuser=root --dbhost=127.0.0.1
+		wp core install --url="$project_name".test --title="$project_name".test --admin_user="$project_name"  --admin_password=password --admin_email=wordpress@wordpress.org
+		wp language core install zh_TW
+		wp language core activate zh_TW
+		wp option update timezone_string "Asia/Taipei"
+		wp site switch-language zh_TW
+		echo "${VP_GREEN}Success:${VP_NONE} Project Created: ${VP_UNDERLINE}https://$project_name.test/${VP_NONE}"
+		wp plugin install woocommerce
+		wp language plugin install woocommerce zh_TW
+		wp plugin install ry-woocommerce-tools
+		wp language plugin install ry-woocommerce-tools zh_TW
+		wp plugin activate woocommerce ry-woocommerce-tools
+		wp theme install storefront
+		wp language theme install storefront zh_TW
+		wp theme activate storefront
+		echo "Valet Link Project"
+		cd ~/Sites/"$project_name"/
+		valet link $project_name
+		valet secure $project_name
+		echo "L: ${VP_UNDERLINE}https://$project_name.test/wp-admin/${VP_NONE}"
+		echo "U: $project_name"
+		echo "P: password"
+	fi
+
+	if [ $1 = "start" ]; then
+		cd ~/Sites
+		echo "${VP_BOLD}ValetPress, start working on a project ${VP_NONE}"
+		ls -d */ | cut -f1 -d'/'
+		echo "${VP_YELLOW}Project Name:${VP_NONE}"
+		read project_name
+		cd $project_name
+		echo "${VP_YELLOW}Backing up database ${VP_NONE}"
+		wp db export
+		echo "${VP_YELLOW}Updating WordPres and Plugins${VP_NONE}"
+		wp plugin update --all
+		echo "${VP_YELLOW}Git Status:${VP_NONE}"
+		cd wp-content/
+		git status -s
+		cd themes/$project_name
+		echo "${VP_YELLOW}Open Theme Atom & Run Gulp${VP_NONE}"
+		atom . && gulp
+		echo "${VP_YELLOW}Open Broser:${VP_NONE} ${VP_UNDERLINE}http://$project_name.test/${VP_NONE}"
+		open http://$project_name.test/
+		echo "${VP_GREEN}Sucess: Project Started${VP_NONE}"
+	fi
+
+	if [ $1 = "envato" ]; then
+		cd ~/Sites
+		echo "${VP_BOLD}ValetPress, create new WordPress site.${VP_NONE}"
+		echo "${VP_YELLOW}ThemeForest Theme ID:${VP_NONE}"
+		read project_name
+		mkdir "$project_name"
+		cd "$project_name"
+		mysql -uroot -e "create database \`$project_name\`"
+		wp core download
+		wp core config --dbname="$project_name" --dbuser=root --dbhost=127.0.0.1
+		wp core install --url="$project_name".test --title="$project_name".test --admin_user="$project_name" --admin_password=password --admin_email=wordpress@wordpress.org
+		echo "${VP_GREEN}Success:${VP_NONE} Project Created: ${VP_UNDERLINE}http://$project_name.test/${VP_NONE}"
+		wp plugin uninstall hello
+		wp plugin uninstall akismet
+		wp plugin install ~/sites/envato-theme-test/wp-content/plugins/envato-theme-test.zip --activate
+		wp plugin install ~/sites/envato-theme-test/wp-content/plugins/auto-login.zip --activate
+		wp theme delete twentysixteen
+		wp theme delete twentyfifteen
+		themepath=~/Google\ Drive/themes/"$project_name".zip
+		wp theme install $themepath --activate
+		echo "L: ${VP_UNDERLINE}http://$project_name.test/wp-login.php${VP_NONE}"
+		echo "U: $project_name"
+		echo "P: password"
+		wp themeforest check $project_name
+		wp tgmpa-plugin install --all
+		wp tgmpa-plugin activate --all
+	fi
+
+	if [ $1 = "delete" ]; then
+		cd ~/Sites
+		echo "${VP_BOLD}${VP_RED}ValetPress, delete a project ${VP_NONE}"
+		ls -d */ | cut -f1 -d'/'
+		echo "${VP_YELLOW}Project Name:${VP_NONE}"
+		read project_name
+		echo "${VP_BOLD}${VP_RED}Are you sure you want to delete $project_name ? (Y/N)${VP_NONE}"
+		read delete_confirm
+		if [ $delete_confirm = "Y" ]; then
+			rm -rf $project_name
+			mysql -uroot -e "DROP DATABASE IF EXISTS  \`$project_name\`"
+			echo "${VP_GREEN}Sucess: $project_name deleted${VP_NONE}"
+		fi
+	fi
+
+	if [ $1 = "help" ]; then
+		echo "${VP_YELLOW}ValetPress Commands:${VP_NONE}"
+		echo "${VP_BOLD} vp empty${VP_NONE}  to create a empty WP site with the default theme"
+		echo "${VP_BOLD} vp create${VP_NONE} to create a WP site from your starter git repo"
+		echo "${VP_BOLD} vp clone${VP_NONE}  to create a WP site from an existing git repo"
+		echo "${VP_BOLD} vp start${VP_NONE}  to start working on an existing project / theme"
+		echo "${VP_ENVATO} vp envato${VP_NONE} to create a new WP site with an TF Theme"
+		echo "${VP_BOLD} vp delete${VP_NONE} to delete an existing WP project"
+	fi
+
+};_vp'
+
+
+
+
+
+
+
