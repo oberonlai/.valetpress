@@ -36,8 +36,8 @@ alias vp='function _vp(){
 		wp theme activate "$project_name"
 		#wp plugin activate advanced-custom-fields-pro minimal-admin bulk-page-creator simple-page-ordering
 		#wp plugin update --all
-		echo "${VP_GREEN}Success:${VP_NONE} Project Created: ${VP_UNDERLINE}http://$project_name.test/${VP_NONE}"
-		echo "L: ${VP_UNDERLINE}http://$project_name.test/wp-admin/${VP_NONE}"
+		echo "${VP_GREEN}Success:${VP_NONE} Project Created: ${VP_UNDERLINE}https://$project_name.test/${VP_NONE}"
+		echo "L: ${VP_UNDERLINE}https://$project_name.test/wp-admin/${VP_NONE}"
 		echo "U: $project_name"
 		echo "P: password"
 		echo "Valet Link Project"
@@ -159,6 +159,8 @@ alias vp='function _vp(){
 		wp theme install storefront
 		wp language theme install storefront zh_TW
 		wp theme activate storefront
+		wp plugin install wordpress-importer --activate
+		wp import dummy-data.xml --authors=skip
 		echo "Valet Link Project"
 		cd ~/Sites/"$project_name"/
 		valet link $project_name
